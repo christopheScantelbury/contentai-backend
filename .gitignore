@@ -70,6 +70,10 @@ web_modules/
 .env.*
 !.env.example
 
+# package-lock gerado no Windows não inclui binários nativos Linux
+# o CI regenera automaticamente com npm install
+package-lock.json
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
