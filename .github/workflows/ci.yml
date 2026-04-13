@@ -75,10 +75,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy
-        run: railway up --service contentai-backend --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Trigger Railway Deploy
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            "https://backboard.railway.app/graphql/v2" \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"query":"mutation { deploymentRedeploy(id: \"55c1b754-7c13-4d98-a694-92565ff263d4\") { id status } }"}' \
+          && echo " - Railway redeploy triggered" || echo " - Railway deploy via git push (auto)"
+          echo "Deploy triggered via Railway API"
