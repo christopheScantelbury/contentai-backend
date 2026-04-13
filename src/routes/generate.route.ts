@@ -22,9 +22,9 @@ const generateLimiter = rateLimit({
 
 router.post(
   '/generate',
-  authMiddleware  as RequestHandler,
+  authMiddleware  as unknown as RequestHandler,
   generateLimiter,
-  generateController as RequestHandler,
+  generateController as unknown as RequestHandler,
 );
 
 export default router;
