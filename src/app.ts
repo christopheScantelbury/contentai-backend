@@ -5,10 +5,18 @@ initSentry();
 import express, { Request, Response, NextFunction } from 'express';
 import generateRoute from './routes/generate.route';
 import checkoutRoute  from './routes/checkout.route';
+import webhookRoute   from './routes/webhook.route';
 import meRoute        from './routes/me.route';
 
 const app  = express();
 const PORT = Number(process.env.PORT) || 3000;
+
+// ── Webhook Stripe — raw body ANTES do express.json() ────────────────────────
+// stripe.webhooks.constructEvent() exige o body como Buffer original.
+app.use(
+  '/api/webhooks/stripe',
+  express.raw({ type: 'application/json' }),
+);
 
 // ── JSON parser global ────────────────────────────────────────────────────────
 app.use(express.json({ limit: '1mb' }));
@@ -19,6 +27,7 @@ app.get('/health', (_req, res) => {
 });
 
 // ── Rotas da API ──────────────────────────────────────────────────────────────
+app.use('/api', webhookRoute);   // sem auth — Stripe assina a request
 app.use('/api', generateRoute);
 app.use('/api', checkoutRoute);
 app.use('/api', meRoute);
