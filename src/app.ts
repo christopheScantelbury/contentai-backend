@@ -4,7 +4,8 @@ initSentry();
 
 import express, { Request, Response, NextFunction } from 'express';
 import generateRoute from './routes/generate.route';
-import meRoute from './routes/me.route';
+import checkoutRoute  from './routes/checkout.route';
+import meRoute        from './routes/me.route';
 
 const app  = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -19,6 +20,7 @@ app.get('/health', (_req, res) => {
 
 // ── Rotas da API ──────────────────────────────────────────────────────────────
 app.use('/api', generateRoute);
+app.use('/api', checkoutRoute);
 app.use('/api', meRoute);
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
