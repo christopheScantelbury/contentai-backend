@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@sentry/node": "^10.48.0",
     "@supabase/supabase-js": "^2.49.4",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",

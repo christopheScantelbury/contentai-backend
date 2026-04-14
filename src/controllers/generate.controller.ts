@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { AuthenticatedRequest, ApiError, GenerateOutput, ImageMimeType } from '../types';
 import { generateContent } from '../services/anthropic';
 import { supabase } from '../services/supabase';
+import { Sentry } from '../services/sentry';
 
 // ── Constantes de validação de imagem ─────────────────────────────────────────
 
@@ -114,6 +115,9 @@ export async function generateController(
     });
   } catch (err) {
     console.error('[generate] Anthropic error:', err);
+    Sentry.captureException(err, {
+      extra: { userId: req.userId, endpoint: '/api/generate', payload: { name, category } },
+    });
     res.status(502).json({
       error: 'Falha na API de IA. Tente novamente.',
       code:  'AI_ERROR',
