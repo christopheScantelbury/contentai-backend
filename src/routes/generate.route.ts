@@ -1,6 +1,7 @@
 import { Router, RequestHandler } from 'express';
 import rateLimit from 'express-rate-limit';
 import { authMiddleware } from '../middlewares/auth';
+import { creditsMiddleware } from '../middlewares/credits';
 import { generateController } from '../controllers/generate.controller';
 import { AuthenticatedRequest } from '../types';
 
@@ -22,8 +23,9 @@ const generateLimiter = rateLimit({
 
 router.post(
   '/generate',
-  authMiddleware  as unknown as RequestHandler,
+  authMiddleware    as unknown as RequestHandler,
   generateLimiter,
+  creditsMiddleware as unknown as RequestHandler,
   generateController as unknown as RequestHandler,
 );
 
