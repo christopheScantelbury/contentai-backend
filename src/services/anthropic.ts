@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { GenerateInput, GenerateOutput } from '../types';
+import type { ImageBlockParam, TextBlockParam } from '@anthropic-ai/sdk/resources/messages';
+import { GenerateInput, GenerateOutput, ImageMimeType } from '../types';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -19,7 +20,7 @@ export async function generateContent(
   const category = sanitize(input.category);
   const features = sanitize(input.features);
 
-  const userMessage = `Produto: ${name}
+  const textInstruction = `Produto: ${name}
 Categoria: ${category}
 Características: ${features}
 
@@ -31,12 +32,34 @@ Retorne um JSON com exatamente esta estrutura:
   "bullets": ["benefit 1", "benefit 2", "benefit 3", "benefit 4", "benefit 5"]
 }`;
 
+  // Monta conteúdo da mensagem: com ou sem imagem (vision)
+  let messageContent: Array<ImageBlockParam | TextBlockParam>;
+
+  if (input.imageBase64 && input.imageMimeType) {
+    messageContent = [
+      {
+        type:   'image',
+        source: {
+          type:       'base64',
+          media_type: input.imageMimeType as ImageMimeType,
+          data:       input.imageBase64,
+        },
+      } satisfies ImageBlockParam,
+      {
+        type: 'text',
+        text: `Analise a imagem do produto acima e use as características visuais para enriquecer o conteúdo.\n\n${textInstruction}`,
+      } satisfies TextBlockParam,
+    ];
+  } else {
+    messageContent = [{ type: 'text', text: textInstruction } satisfies TextBlockParam];
+  }
+
   const start   = Date.now();
   const message = await client.messages.create({
     model:      'claude-sonnet-4-20250514',
     max_tokens: 1024,
     system:     SYSTEM_PROMPT,
-    messages:   [{ role: 'user', content: userMessage }],
+    messages:   [{ role: 'user', content: messageContent }],
   });
   const generationTimeMs = Date.now() - start;
 
@@ -62,7 +85,7 @@ Retorne um JSON com exatamente esta estrutura:
 
   return {
     ...parsed,
-    tokensUsed:       (message.usage.input_tokens + message.usage.output_tokens),
+    tokensUsed:       message.usage.input_tokens + message.usage.output_tokens,
     generationTimeMs,
   };
 }
