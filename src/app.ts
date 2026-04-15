@@ -7,6 +7,7 @@ import generateRoute from './routes/generate.route';
 import checkoutRoute  from './routes/checkout.route';
 import webhookRoute   from './routes/webhook.route';
 import meRoute        from './routes/me.route';
+import cronRoute       from './routes/cron.route';
 
 const app  = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -28,6 +29,7 @@ app.get('/health', (_req, res) => {
 
 // ── Rotas da API ──────────────────────────────────────────────────────────────
 app.use('/api', webhookRoute);   // sem auth — Stripe assina a request
+app.use('/api', cronRoute);      // sem auth JWT — protegido por CRON_SECRET
 app.use('/api', generateRoute);
 app.use('/api', checkoutRoute);
 app.use('/api', meRoute);
