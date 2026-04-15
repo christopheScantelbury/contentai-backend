@@ -9,6 +9,7 @@ import webhookRoute   from './routes/webhook.route';
 import meRoute        from './routes/me.route';
 import cronRoute       from './routes/cron.route';
 import usageRoute     from './routes/usage.route';
+import feedbackRoute  from './routes/feedback.route';
 
 const app  = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -34,6 +35,7 @@ app.use('/api', cronRoute);      // sem auth JWT — protegido por CRON_SECRET
 app.use('/api', generateRoute);
 app.use('/api', checkoutRoute);
 app.use('/api', usageRoute);
+app.use('/api', feedbackRoute);
 app.use('/api', meRoute);
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
