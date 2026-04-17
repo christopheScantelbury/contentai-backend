@@ -10,9 +10,13 @@ import meRoute        from './routes/me.route';
 import cronRoute       from './routes/cron.route';
 import usageRoute     from './routes/usage.route';
 import feedbackRoute  from './routes/feedback.route';
+import { ipRateLimiter } from './middlewares/ipRateLimit';
 
 const app  = express();
 const PORT = Number(process.env.PORT) || 3000;
+
+// Trust Railway's reverse proxy so req.ip reflects the real client IP
+app.set('trust proxy', 1);
 
 // ── Webhook Stripe — raw body ANTES do express.json() ────────────────────────
 // stripe.webhooks.constructEvent() exige o body como Buffer original.
@@ -28,6 +32,9 @@ app.use(express.json({ limit: '1mb' }));
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
+
+// ── Rate limit por IP — 20 req/hora (antes de todas as rotas de API) ─────────
+app.use('/api', ipRateLimiter);
 
 // ── Rotas da API ──────────────────────────────────────────────────────────────
 app.use('/api', webhookRoute);   // sem auth — Stripe assina a request
