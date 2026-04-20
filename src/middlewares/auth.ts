@@ -22,6 +22,7 @@ export async function authMiddleware(
   const { data: { user }, error } = await supabase.auth.getUser(token);
 
   if (error || !user) {
+    console.error('[auth] getUser error:', error?.message, error?.status, '| user:', !!user, '| token prefix:', token.slice(0, 20));
     res.status(401).json({
       error: 'Token inválido ou expirado',
       code:  'INVALID_TOKEN',
