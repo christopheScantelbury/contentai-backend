@@ -4,13 +4,14 @@ initSentry();
 
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import generateRoute from './routes/generate.route';
-import checkoutRoute  from './routes/checkout.route';
-import webhookRoute   from './routes/webhook.route';
-import meRoute        from './routes/me.route';
-import cronRoute       from './routes/cron.route';
-import usageRoute     from './routes/usage.route';
-import feedbackRoute  from './routes/feedback.route';
+import generateRoute    from './routes/generate.route';
+import checkoutRoute    from './routes/checkout.route';
+import webhookRoute     from './routes/webhook.route';
+import meRoute          from './routes/me.route';
+import cronRoute        from './routes/cron.route';
+import usageRoute       from './routes/usage.route';
+import feedbackRoute    from './routes/feedback.route';
+import checkDeviceRoute from './routes/checkDevice.route';
 import { ipRateLimiter } from './middlewares/ipRateLimit';
 
 const app  = express();
@@ -59,8 +60,9 @@ app.get('/health', (_req, res) => {
 app.use('/api', ipRateLimiter);
 
 // ── Rotas da API ──────────────────────────────────────────────────────────────
-app.use('/api', webhookRoute);   // sem auth — Stripe assina a request
-app.use('/api', cronRoute);      // sem auth JWT — protegido por CRON_SECRET
+app.use('/api', webhookRoute);     // sem auth — Stripe assina a request
+app.use('/api', cronRoute);        // sem auth JWT — protegido por CRON_SECRET
+app.use('/api', checkDeviceRoute); // sem auth JWT — público, rate-limitado por IP
 app.use('/api', generateRoute);
 app.use('/api', checkoutRoute);
 app.use('/api', usageRoute);
