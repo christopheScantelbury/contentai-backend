@@ -3,6 +3,7 @@ import { initSentry, Sentry } from './services/sentry';
 initSentry();
 
 import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import generateRoute from './routes/generate.route';
 import checkoutRoute  from './routes/checkout.route';
 import webhookRoute   from './routes/webhook.route';
@@ -17,6 +18,27 @@ const PORT = Number(process.env.PORT) || 3000;
 
 // Trust Railway's reverse proxy so req.ip reflects the real client IP
 app.set('trust proxy', 1);
+
+// ── CORS ─────────────────────────────────────────────────────────────────────
+const allowedOrigins = [
+  process.env.FRONTEND_URL ?? 'https://www.descricaoai.com.br',
+  'https://descricaoai.com.br',
+  'https://www.descricaoai.com.br',
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permite requests sem origin (ex: curl, Postman, server-to-server)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS bloqueado: ${origin}`));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
 
 // ── Webhook Stripe — raw body ANTES do express.json() ────────────────────────
 // stripe.webhooks.constructEvent() exige o body como Buffer original.
