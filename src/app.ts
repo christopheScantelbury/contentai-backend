@@ -11,7 +11,8 @@ import meRoute          from './routes/me.route';
 import cronRoute        from './routes/cron.route';
 import usageRoute       from './routes/usage.route';
 import feedbackRoute    from './routes/feedback.route';
-import checkDeviceRoute from './routes/checkDevice.route';
+import checkDeviceRoute       from './routes/checkDevice.route';
+import adminGenerationsRoute  from './routes/admin/generations.route';
 import { ipRateLimiter } from './middlewares/ipRateLimit';
 
 const app  = express();
@@ -68,6 +69,7 @@ app.use('/api', checkoutRoute);
 app.use('/api', usageRoute);
 app.use('/api', feedbackRoute);
 app.use('/api', meRoute);
+app.use('/api', adminGenerationsRoute);
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {
