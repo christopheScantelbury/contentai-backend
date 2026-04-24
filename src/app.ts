@@ -13,6 +13,7 @@ import usageRoute       from './routes/usage.route';
 import feedbackRoute    from './routes/feedback.route';
 import checkDeviceRoute from './routes/checkDevice.route';
 import adminStatsRoute  from './routes/admin/stats.route';
+import adminUsersRoute  from './routes/admin/users.route';
 import { ipRateLimiter } from './middlewares/ipRateLimit';
 
 const app  = express();
@@ -70,6 +71,7 @@ app.use('/api', usageRoute);
 app.use('/api', feedbackRoute);
 app.use('/api', meRoute);
 app.use('/api', adminStatsRoute);
+app.use('/api', adminUsersRoute);
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {
