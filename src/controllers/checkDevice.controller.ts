@@ -41,7 +41,7 @@ export async function checkDeviceController(
   const match = (users?.users ?? []).find(
     (u) =>
       u.email_confirmed_at &&
-      (u.user_metadata?.device_id === device_id || u.raw_user_meta_data?.device_id === device_id),
+      u.user_metadata?.device_id === device_id,
   );
 
   res.status(200).json({ blocked: !!match });
